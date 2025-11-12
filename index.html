@@ -318,6 +318,132 @@
             font-size: 0.9em;
             color: #2c3e50;
         }
+
+        /* NOVO: Lembrete flutuante no canto inferior esquerdo */
+        .floating-reminder {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            animation: floatIn 0.6s ease-out;
+            border-left: 5px solid #ffeb3b;
+            transition: all 0.3s ease;
+        }
+
+        .floating-reminder.minimized {
+            width: 60px;
+            height: 60px;
+            padding: 10px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .floating-reminder.minimized:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes floatIn {
+            from {
+                transform: translateY(100px) scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .floating-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .floating-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .floating-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .floating-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+
+        .floating-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .floating-content {
+            margin-bottom: 15px;
+        }
+
+        .floating-activity {
+            font-size: 1em;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid #ffeb3b;
+        }
+
+        .floating-time {
+            font-size: 0.9em;
+            opacity: 0.9;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .floating-minimized-icon {
+            font-size: 1.8em;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .next-activities {
+            margin-top: 10px;
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        .next-activity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -367,6 +493,31 @@
         </div>
     </div>
 
+    <!-- NOVO: Lembrete flutuante no canto inferior esquerdo -->
+    <div id="floatingReminder" class="floating-reminder">
+        <div class="floating-header">
+            <div class="floating-title">
+                <span>⏰</span>
+                <span class="floating-title-text">Lembretes</span>
+            </div>
+            <div class="floating-controls">
+                <button class="floating-btn" id="minimizeBtn">−</button>
+                <button class="floating-btn" id="closeFloatingBtn">×</button>
+            </div>
+        </div>
+        <div class="floating-content">
+            <div class="floating-activity" id="floatingActivity">
+                Nenhuma atividade no momento
+            </div>
+            <div class="floating-time" id="floatingTime">
+                --:--
+            </div>
+            <div class="next-activities" id="nextActivities">
+                <!-- Próximas atividades serão inseridas aqui -->
+            </div>
+        </div>
+    </div>
+
     <script>
         // Dados das atividades do arquivo CSV
         const activities = [
@@ -391,6 +542,15 @@
         const markCompletedCheckbox = document.getElementById('markCompleted');
         const closeBtn = document.getElementById('closeBtn');
 
+        // NOVOS elementos para o lembrete flutuante
+        const floatingReminder = document.getElementById('floatingReminder');
+        const floatingActivity = document.getElementById('floatingActivity');
+        const floatingTime = document.getElementById('floatingTime');
+        const nextActivities = document.getElementById('nextActivities');
+        const minimizeBtn = document.getElementById('minimizeBtn');
+        const closeFloatingBtn = document.getElementById('closeFloatingBtn');
+        const floatingTitleText = document.querySelector('.floating-title-text');
+
         // Estado da aplicação
         let currentActivity = null;
         let timers = [];
@@ -398,6 +558,7 @@
         let autoReminderTimer = null;
         let reminderCount = 0;
         const AUTO_REMINDER_INTERVAL = 2 * 60 * 1000; // 2 minutos
+        let isFloatingMinimized = false;
 
         // Inicialização
         function init() {
@@ -410,6 +571,7 @@
             requestNotificationPermission();
             
             updateSystemStatus();
+            updateFloatingReminder();
         }
 
         // Atualiza o status do sistema
@@ -440,6 +602,60 @@
                 systemStatus.textContent = `Próxima atividade: ${nextActivity.name} às ${nextActivity.time} (em ${minutesUntil} minutos)`;
             } else {
                 systemStatus.textContent = 'Todas as atividades foram concluídas';
+            }
+        }
+
+        // NOVA FUNÇÃO: Atualiza o lembrete flutuante
+        function updateFloatingReminder() {
+            const now = new Date();
+            const pendingActivities = activities
+                .filter(activity => !activity.completed)
+                .map(activity => {
+                    const activityTime = new Date();
+                    const [hours, minutes] = activity.time.split(':');
+                    activityTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                    
+                    if (activityTime < now) {
+                        activityTime.setDate(activityTime.getDate() + 1);
+                    }
+                    
+                    return {
+                        name: activity.name,
+                        time: activity.time,
+                        timeUntil: activityTime.getTime() - now.getTime(),
+                        date: activityTime
+                    };
+                })
+                .sort((a, b) => a.timeUntil - b.timeUntil);
+
+            if (pendingActivities.length > 0) {
+                const nextActivity = pendingActivities[0];
+                const minutesUntil = Math.round(nextActivity.timeUntil / 60000);
+                
+                floatingActivity.textContent = nextActivity.name;
+                floatingTime.textContent = `${nextActivity.time} (em ${minutesUntil} min)`;
+                
+                // Atualizar próximas atividades
+                if (pendingActivities.length > 1) {
+                    let nextActivitiesHTML = '<div style="margin-top: 8px; font-weight: bold;">Próximas:</div>';
+                    for (let i = 1; i < Math.min(pendingActivities.length, 4); i++) {
+                        const activity = pendingActivities[i];
+                        const mins = Math.round(activity.timeUntil / 60000);
+                        nextActivitiesHTML += `
+                            <div class="next-activity-item">
+                                <span>${activity.name}</span>
+                                <span>${activity.time} (${mins} min)</span>
+                            </div>
+                        `;
+                    }
+                    nextActivities.innerHTML = nextActivitiesHTML;
+                } else {
+                    nextActivities.innerHTML = '';
+                }
+            } else {
+                floatingActivity.textContent = 'Todas as atividades concluídas';
+                floatingTime.textContent = '--:--';
+                nextActivities.innerHTML = '';
             }
         }
 
@@ -527,6 +743,7 @@
             });
             
             updateSystemStatus();
+            updateFloatingReminder();
         }
 
         // Mostra a notificação para uma atividade
@@ -727,6 +944,68 @@
             closeBtn.addEventListener('click', () => {
                 hideNotification();
             });
+
+            // NOVOS event listeners para o lembrete flutuante
+            minimizeBtn.addEventListener('click', () => {
+                toggleFloatingReminder();
+            });
+
+            closeFloatingBtn.addEventListener('click', () => {
+                floatingReminder.style.display = 'none';
+            });
+
+            floatingReminder.addEventListener('click', (e) => {
+                if (isFloatingMinimized) {
+                    toggleFloatingReminder();
+                }
+            });
+
+            // Atualizar o lembrete flutuante a cada minuto
+            setInterval(updateFloatingReminder, 60000);
+        }
+
+        // NOVA FUNÇÃO: Alternar entre minimizado e expandido
+        function toggleFloatingReminder() {
+            isFloatingMinimized = !isFloatingMinimized;
+            
+            if (isFloatingMinimized) {
+                floatingReminder.classList.add('minimized');
+                floatingTitleText.style.display = 'none';
+                floatingReminder.innerHTML = `
+                    <div class="floating-minimized-icon">⏰</div>
+                `;
+            } else {
+                floatingReminder.classList.remove('minimized');
+                floatingReminder.innerHTML = `
+                    <div class="floating-header">
+                        <div class="floating-title">
+                            <span>⏰</span>
+                            <span class="floating-title-text">Lembretes</span>
+                        </div>
+                        <div class="floating-controls">
+                            <button class="floating-btn" id="minimizeBtn">−</button>
+                            <button class="floating-btn" id="closeFloatingBtn">×</button>
+                        </div>
+                    </div>
+                    <div class="floating-content">
+                        <div class="floating-activity" id="floatingActivity">
+                            ${floatingActivity.textContent}
+                        </div>
+                        <div class="floating-time" id="floatingTime">
+                            ${floatingTime.textContent}
+                        </div>
+                        <div class="next-activities" id="nextActivities">
+                            ${nextActivities.innerHTML}
+                        </div>
+                    </div>
+                `;
+                
+                // Reatribuir event listeners
+                document.getElementById('minimizeBtn').addEventListener('click', toggleFloatingReminder);
+                document.getElementById('closeFloatingBtn').addEventListener('click', () => {
+                    floatingReminder.style.display = 'none';
+                });
+            }
         }
 
         // Esconde a notificação
