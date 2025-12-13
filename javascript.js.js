@@ -3,7 +3,7 @@ function doGet(e) {
   const action = e.parameter.action;
   
   try {
-    const sheet = SpreadsheetApp.openById('1KTdETwaRMczOTOuyIDHAODp4mNmETxDQTs0RGrSNxfI')
+    const sheet = SpreadsheetApp.openById('1k33SVvjo-gjoZG1cWVrvm48QjUrPjtsSuEnGIYmHcUQ')
       .getSheetByName('Atividades diárias');
     
     if (!sheet) {
@@ -129,7 +129,7 @@ function createResponse(success, data) {
 
 // Teste local
 function testGetActivities() {
-  const result = getActivitiesData(SpreadsheetApp.openById('1KTdETwaRMczOTOuyIDHAODp4mNmETxDQTs0RGrSNxfI')
+  const result = getActivitiesData(SpreadsheetApp.openById('1k33SVvjo-gjoZG1cWVrvm48QjUrPjtsSuEnGIYmHcUQ')
     .getSheetByName('Atividades diárias'));
   Logger.log(JSON.stringify(result, null, 2));
 }
