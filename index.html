@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lembretes de Atividades Diárias</title>
+    <title>Lembretes de Atividades Diárias - Sistema Inteligente</title>
     <style>
         * {
             margin: 0;
@@ -12,76 +12,157 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            padding: 20px;
-            min-height: 100vh;
+        /* Estilo para modo sobreposto */
+        body.overlay-mode {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2147483647;
+            pointer-events: none;
+        }
+        
+        .overlay-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.01);
+            z-index: -1;
         }
         
         .container {
             max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            margin: 20px auto;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            padding: 25px;
             position: relative;
             z-index: 1;
+            pointer-events: auto;
+            border: 1px solid #e2e8f0;
+        }
+        
+        body.overlay-mode .container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid #3498db;
+            box-shadow: 0 0 40px rgba(52, 152, 219, 0.3);
+            animation: pulseGlow 3s infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(52, 152, 219, 0.3); }
+            50% { box-shadow: 0 0 50px rgba(52, 152, 219, 0.5); }
         }
         
         h1 {
             text-align: center;
-            margin-bottom: 20px;
-            color: #2c3e50;
+            margin-bottom: 25px;
+            color: #1a202c;
+            font-size: 2.2em;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
         }
         
         .activities-list {
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
         
         .activity-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-            transition: background-color 0.3s;
+            padding: 15px 18px;
+            border-bottom: 1px solid #edf2f7;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin-bottom: 5px;
         }
         
         .activity-item:hover {
-            background-color: #f9f9f9;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
         
         .activity-item.completed {
-            background-color: #e8f5e9;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 4px solid #2ecc71;
             text-decoration: line-through;
-            color: #4caf50;
+            color: #27ae60;
+        }
+        
+        .activity-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
         }
         
         .activity-time {
-            font-weight: bold;
-            color: #3498db;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-right: 20px;
+            min-width: 70px;
+            background: #edf2f7;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1.1em;
         }
         
+        .activity-name {
+            flex: 1;
+            font-size: 1.05em;
+            color: #2d3748;
+        }
+        
+        .activity-checkbox {
+            margin-left: 20px;
+        }
+        
+        .activity-checkbox input {
+            transform: scale(1.5);
+            accent-color: #3498db;
+            cursor: pointer;
+        }
+        
+        /* Notificação Principal Aprimorada */
         .notification {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 380px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-            padding: 25px;
+            bottom: 30px;
+            right: 30px;
+            width: 420px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+            padding: 30px;
             display: none;
             z-index: 10000;
-            animation: slideIn 0.5s ease-out;
+            animation: slideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             border-left: 6px solid #3498db;
+            pointer-events: auto;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         @keyframes slideIn {
             from {
-                transform: translateX(400px) scale(0.9);
+                transform: translateX(500px) scale(0.8);
                 opacity: 0;
             }
             to {
@@ -92,151 +173,188 @@
         
         .notification.active {
             display: block;
+            animation: floatNotification 3s ease-in-out infinite;
+        }
+        
+        @keyframes floatNotification {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
         
         .notification-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
         }
         
         .notification-title {
-            font-weight: bold;
+            font-weight: 700;
             color: #2c3e50;
-            font-size: 1.3em;
+            font-size: 1.4em;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .notification-time {
-            font-size: 0.95em;
-            color: #7f8c8d;
-            background: #f8f9fa;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: bold;
+            font-size: 1em;
+            color: #4a5568;
+            background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
         }
         
         .notification-message {
-            margin-bottom: 22px;
-            color: #34495e;
-            font-size: 1.15em;
-            line-height: 1.5;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 3px solid #3498db;
+            margin-bottom: 25px;
+            color: #2d3748;
+            font-size: 1.2em;
+            line-height: 1.6;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
         }
         
         .notification-actions {
             display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 20px;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 25px;
         }
         
         .btn {
-            padding: 12px 20px;
+            padding: 14px 28px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-size: 1em;
-            min-width: 100px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         .btn-primary {
-            background-color: #3498db;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
         }
         
         .btn-primary:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(135deg, #2980b9 0%, #2573a7 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
         }
         
         .btn-secondary {
-            background-color: #e0e0e0;
-            color: #333;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+            color: #2d3748;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
         .btn-secondary:hover {
-            background-color: #d0d0d0;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
         
         .status-indicator {
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
-            margin-right: 10px;
+            margin-right: 12px;
+            box-shadow: 0 0 10px currentColor;
         }
         
         .status-pending {
             background-color: #f39c12;
+            animation: pulseWarning 2s infinite;
         }
         
         .status-completed {
             background-color: #2ecc71;
         }
         
+        @keyframes pulseWarning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
         .controls {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
         
-        .test-notification {
-            background-color: #9b59b6;
+        .overlay-toggle {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
         }
         
-        .test-notification:hover {
-            background-color: #8e44ad;
+        .overlay-toggle:hover {
+            background: linear-gradient(135deg, #27ae60 0%, #219653 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
         }
         
         .reset-btn {
-            background-color: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
         }
         
         .reset-btn:hover {
-            background-color: #c0392b;
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
+        }
+        
+        .test-btn:hover {
+            background: linear-gradient(135deg, #8e44ad 0%, #7d3c98 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.4);
         }
         
         .auto-reminder-info {
             text-align: center;
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #7f8c8d;
-            font-style: italic;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            border: 1px dashed #ddd;
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: #4a5568;
+            padding: 15px;
+            background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+            border-radius: 10px;
+            border: 2px dashed #cbd5e0;
         }
         
         .urgent {
             border-left-color: #e74c3c !important;
-            animation: pulse 1.2s infinite;
+            animation: urgentPulse 1s infinite;
         }
         
-        @keyframes pulse {
+        @keyframes urgentPulse {
             0% { 
                 box-shadow: 0 8px 30px rgba(231, 76, 60, 0.4);
             }
             50% { 
-                box-shadow: 0 12px 40px rgba(231, 76, 60, 0.7);
-                transform: scale(1.03);
+                box-shadow: 0 15px 50px rgba(231, 76, 60, 0.7);
+                transform: scale(1.05);
             }
             100% { 
                 box-shadow: 0 8px 30px rgba(231, 76, 60, 0.4);
@@ -246,23 +364,23 @@
         .check-option {
             display: flex;
             align-items: center;
-            margin: 18px 0;
-            padding: 14px;
-            background: #f0f7ff;
-            border-radius: 8px;
-            border: 1px solid #d1e7ff;
+            margin: 20px 0;
+            padding: 18px;
+            background: linear-gradient(135deg, #ebf8ff 0%, #e1f5fe 100%);
+            border-radius: 12px;
+            border: 2px solid #bee3f8;
         }
         
         .check-option input {
-            margin-right: 12px;
-            transform: scale(1.4);
+            margin-right: 15px;
+            transform: scale(1.6);
             accent-color: #3498db;
         }
         
         .check-option label {
-            font-size: 1em;
+            font-size: 1.1em;
             color: #2c3e50;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
         }
         
@@ -270,20 +388,29 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             text-align: center;
-            line-height: 24px;
-            font-size: 0.85em;
+            line-height: 28px;
+            font-size: 0.9em;
             font-weight: bold;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
         }
         
         .notification-icon {
-            font-size: 1.4em;
-            margin-right: 5px;
+            font-size: 1.6em;
+            margin-right: 8px;
+            animation: bellRing 3s infinite;
+        }
+        
+        @keyframes bellRing {
+            0%, 55%, 100% { transform: rotate(0); }
+            5%, 10% { transform: rotate(15deg); }
+            15%, 20% { transform: rotate(-15deg); }
+            25%, 30% { transform: rotate(10deg); }
         }
         
         .close-btn {
@@ -292,65 +419,73 @@
             right: 15px;
             background: none;
             border: none;
-            font-size: 1.4em;
+            font-size: 1.6em;
             cursor: pointer;
-            color: #7f8c8d;
+            color: #718096;
             padding: 5px;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s;
         }
         
         .close-btn:hover {
-            background: #f5f5f5;
-            color: #e74c3c;
+            background: #fed7d7;
+            color: #e53e3e;
+            transform: rotate(90deg);
         }
         
         .system-status {
             text-align: center;
-            margin: 15px 0;
-            padding: 10px;
-            background: #e8f4fd;
-            border-radius: 5px;
-            font-size: 0.9em;
+            margin: 20px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #e8f4fd 0%, #d6eaf8 100%);
+            border-radius: 10px;
+            font-size: 1em;
             color: #2c3e50;
+            border-left: 4px solid #3498db;
+            font-weight: 500;
         }
 
-        /* NOVO: Lembrete flutuante no canto inferior esquerdo */
+        /* Lembrete flutuante avançado */
         .floating-reminder {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            width: 300px;
+            bottom: 30px;
+            left: 30px;
+            width: 350px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            z-index: 9999;
-            animation: floatIn 0.6s ease-out;
-            border-left: 5px solid #ffeb3b;
-            transition: all 0.3s ease;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            z-index: 2147483646;
+            animation: floatIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border-left: 6px solid #ffeb3b;
+            transition: all 0.4s ease;
+            pointer-events: auto;
+            backdrop-filter: blur(10px);
         }
 
         .floating-reminder.minimized {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             padding: 10px;
             overflow: hidden;
             cursor: pointer;
+            border-radius: 50%;
         }
 
         .floating-reminder.minimized:hover {
-            transform: scale(1.05);
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 30px rgba(255, 235, 59, 0.7);
         }
 
         @keyframes floatIn {
             from {
-                transform: translateY(100px) scale(0.8);
+                transform: translateY(100px) scale(0.7);
                 opacity: 0;
             }
             to {
@@ -363,113 +498,485 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .floating-title {
-            font-weight: bold;
-            font-size: 1.1em;
+            font-weight: 700;
+            font-size: 1.3em;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
         }
 
         .floating-controls {
             display: flex;
-            gap: 5px;
+            gap: 8px;
         }
 
         .floating-btn {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
             border: none;
             color: white;
-            width: 25px;
-            height: 25px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9em;
-            transition: all 0.2s;
+            font-size: 1.1em;
+            transition: all 0.3s;
         }
 
         .floating-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.2);
         }
 
         .floating-content {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .floating-activity {
-            font-size: 1em;
-            margin-bottom: 8px;
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            border-left: 3px solid #ffeb3b;
+            font-size: 1.15em;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border-left: 4px solid #ffeb3b;
+            line-height: 1.5;
         }
 
         .floating-time {
-            font-size: 0.9em;
-            opacity: 0.9;
+            font-size: 1.1em;
+            opacity: 0.95;
             text-align: center;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 5px 10px;
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
             display: inline-block;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .floating-minimized-icon {
-            font-size: 1.8em;
+            font-size: 2em;
             text-align: center;
             width: 100%;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
+            animation: spin 20s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .next-activities {
-            margin-top: 10px;
-            font-size: 0.85em;
-            opacity: 0.8;
+            margin-top: 15px;
+            font-size: 0.9em;
+            opacity: 0.9;
         }
 
         .next-activity-item {
             display: flex;
             justify-content: space-between;
-            padding: 4px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            align-items: center;
+        }
+
+        .next-activity-time {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+        }
+
+        /* Drag functionality */
+        .draggable {
+            cursor: move;
+            user-select: none;
+            padding-right: 40px;
+        }
+
+        .drag-handle {
+            cursor: move;
+            padding: 8px;
+            background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+            border-radius: 8px;
+            margin-right: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5em;
+            color: #4a5568;
+        }
+
+        /* Status de sincronização */
+        .sync-status {
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 500;
+            display: none;
+        }
+
+        .sync-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .sync-error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .sync-loading {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+
+        /* Checkbox de confirmação nas atividades */
+        .activity-checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .checkbox-label {
+            font-size: 0.95em;
+            color: #4a5568;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+
+        /* Barra de notificação inferior aprimorada */
+        .notebook-notification-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 18px 30px;
+            z-index: 2147483645;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform: translateY(100%);
+            pointer-events: auto;
+            backdrop-filter: blur(10px);
+            border-top: 3px solid #ffeb3b;
+        }
+
+        .notebook-notification-bar.active {
+            transform: translateY(0);
+        }
+
+        .notebook-notification-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .notebook-notification-icon {
+            font-size: 1.8em;
+            animation: bellRing 3s infinite;
+        }
+
+        .notebook-notification-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .notebook-notification-time {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .notebook-notification-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .notebook-notification-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notebook-notification-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .notebook-notification-btn.primary {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .notebook-notification-btn.primary:hover {
+            background: linear-gradient(135deg, #27ae60 0%, #219653 100%);
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+        }
+
+        .notebook-notification-close {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+            margin-left: 10px;
+        }
+
+        .notebook-notification-close:hover {
+            background: rgba(231, 76, 60, 0.8);
+            transform: rotate(90deg);
+        }
+
+        .notification-indicator {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50%;
+            z-index: 2147483646;
+            animation: indicatorPulse 2s infinite;
+            display: none;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.7);
+        }
+
+        @keyframes indicatorPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        /* Progress bar para atividades */
+        .progress-container {
+            margin: 25px 0;
+            background: #edf2f7;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 12px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            width: 0%;
+            transition: width 1s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        /* Modo escuro opcional */
+        @media (prefers-color-scheme: dark) {
+            .container {
+                background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+                color: #e2e8f0;
+                border-color: #4a5568;
+            }
+            
+            .activity-item:hover {
+                background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            }
+            
+            .activity-time {
+                background: #4a5568;
+                color: #e2e8f0;
+            }
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .notification {
+                width: 90%;
+                right: 5%;
+                bottom: 20px;
+            }
+            
+            .floating-reminder {
+                width: 90%;
+                left: 5%;
+                bottom: 20px;
+            }
+            
+            .floating-reminder.minimized {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+                left: auto;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .notebook-notification-bar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .notebook-notification-content {
+                width: 100%;
+            }
+            
+            .notebook-notification-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Efeito de vidro */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Tooltips */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Animação de entrada para itens */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body>
+    <div class="overlay-backdrop"></div>
+    
     <div class="container">
-        <h1>Lembretes de Atividades Diárias</h1>
+        <h1 class="draggable" data-tooltip="Arraste para reposicionar">
+            <span class="drag-handle">≡</span> 
+            ⏰ Sistema de Lembretes Inteligente
+        </h1>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">0% concluído</div>
         
         <div class="system-status" id="systemStatus">
-            Sistema de lembretes ativo - Próximas notificações aparecerão automaticamente
+            ✅ Carregando atividades da planilha...
         </div>
+
+        <div id="syncStatus" class="sync-status"></div>
         
         <div class="controls">
-            <button id="resetAll" class="btn reset-btn">Reiniciar Todas</button>
+            <button id="overlayToggle" class="btn overlay-toggle" data-tooltip="Alternar modo sobreposição">
+                <span>🖥️</span> Modo Sobreposição
+            </button>
+            <button id="loadFromSheetBtn" class="btn test-btn" data-tooltip="Recarregar da planilha">
+                <span>🔄</span> Carregar da Planilha
+            </button>
+            <button id="resetAll" class="btn reset-btn" data-tooltip="Reiniciar todas as atividades">
+                <span>🔄</span> Reiniciar Todas
+            </button>
         </div>
         
         <div class="activities-list">
-            <h2>Atividades Programadas</h2>
+            <h2>📋 Atividades Programadas</h2>
             <div id="activitiesContainer">
-                <!-- As atividades serão inseridas aqui dinamicamente -->
+                <!-- As atividades serão carregadas dinamicamente -->
+                <div class="activity-item">
+                    <div class="activity-info">
+                        <span class="status-indicator status-pending"></span>
+                        <span class="activity-name">Carregando atividades...</span>
+                    </div>
+                </div>
             </div>
         </div>
         
         <div class="auto-reminder-info">
-            ⓘ Os lembretes reaparecerão automaticamente a cada 2 minutos até serem confirmados
+            ⓘ Sistema Inteligente: Os lembretes reaparecem automaticamente a cada 2 minutos até confirmação.
+            <br>✅ Sincronização automática com planilha Google.
         </div>
     </div>
     
+    <!-- Notificação Principal -->
     <div id="notification" class="notification">
         <button class="close-btn" id="closeBtn">×</button>
         <div class="notification-header">
@@ -484,30 +991,34 @@
         
         <div class="check-option">
             <input type="checkbox" id="markCompleted">
-            <label for="markCompleted">Marcar esta atividade como concluída</label>
+            <label for="markCompleted">✅ Marcar como concluída e sincronizar</label>
         </div>
         
         <div class="notification-actions">
-            <button id="snoozeBtn" class="btn btn-secondary">Adiar (5 min)</button>
-            <button id="confirmBtn" class="btn btn-primary">Confirmar</button>
+            <button id="snoozeBtn" class="btn btn-secondary" data-tooltip="Adiar por 5 minutos">
+                <span>⏸️</span> Adiar (5 min)
+            </button>
+            <button id="confirmBtn" class="btn btn-primary" data-tooltip="Confirmar e sincronizar">
+                <span>✅</span> Confirmar & Sincronizar
+            </button>
         </div>
     </div>
 
-    <!-- NOVO: Lembrete flutuante no canto inferior esquerdo -->
+    <!-- Lembrete flutuante -->
     <div id="floatingReminder" class="floating-reminder">
         <div class="floating-header">
             <div class="floating-title">
                 <span>⏰</span>
-                <span class="floating-title-text">Lembretes</span>
+                <span class="floating-title-text">Lembretes Ativos</span>
             </div>
             <div class="floating-controls">
-                <button class="floating-btn" id="minimizeBtn">−</button>
-                <button class="floating-btn" id="closeFloatingBtn">×</button>
+                <button class="floating-btn" id="minimizeBtn" data-tooltip="Minimizar">−</button>
+                <button class="floating-btn" id="closeFloatingBtn" data-tooltip="Fechar">×</button>
             </div>
         </div>
         <div class="floating-content">
             <div class="floating-activity" id="floatingActivity">
-                Nenhuma atividade no momento
+                Carregando atividades...
             </div>
             <div class="floating-time" id="floatingTime">
                 --:--
@@ -518,110 +1029,598 @@
         </div>
     </div>
 
+    <!-- Barra de notificação inferior -->
+    <div id="notebookNotificationBar" class="notebook-notification-bar">
+        <div class="notebook-notification-content">
+            <div class="notebook-notification-icon">🔔</div>
+            <div class="notebook-notification-text" id="notebookNotificationText">
+                Carregando sistema...
+            </div>
+            <div class="notebook-notification-time" id="notebookNotificationTime">
+                --:--
+            </div>
+        </div>
+        <div class="notebook-notification-actions">
+            <button class="notebook-notification-btn" id="notebookSnoozeBtn">
+                <span>⏸️</span> Adiar
+            </button>
+            <button class="notebook-notification-btn primary" id="notebookConfirmBtn">
+                <span>✅</span> Confirmar
+            </button>
+            <button class="notebook-notification-close" id="notebookCloseBtn">×</button>
+        </div>
+    </div>
+
+    <!-- Indicador de notificação -->
+    <div id="notificationIndicator" class="notification-indicator"></div>
+
     <script>
-        // Dados das atividades do arquivo CSV
-        const activities = [
-            { name: "Envio de report's", time: "23:00" },
-            { name: "Preencher mantra", time: "23:15" },
-            { name: "Preencher mantra Inbound", time: "04:30" },
-            { name: "Verificar e-mails importantes", time: "05:00" },
-            { name: "Fazer feedback", time: "05:15" },
-            { name: "Preencher mantra", time: "06:08" }
-        ];
+        // ========== CONFIGURAÇÕES GERAIS ==========
+        const SHEET_ID = '1KTdETwaRMczOTOuyIDHAODp4mNmETxDQTs0RGrSNxfI';
+        const SHEET_NAME = 'Atividades diárias';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz4w6__wePEfJmn6PGOPZ5sTMc3dHSGG9fQ77i-7W-CyZJ5B1G8qRut7z8j8T68VLTU/exec';
 
-        // Elementos DOM
-        const activitiesContainer = document.getElementById('activitiesContainer');
-        const systemStatus = document.getElementById('systemStatus');
-        const notification = document.getElementById('notification');
-        const notificationTime = document.getElementById('notificationTime');
-        const notificationMessage = document.getElementById('notificationMessage');
-        const notificationCounter = document.getElementById('notificationCounter');
-        const confirmBtn = document.getElementById('confirmBtn');
-        const snoozeBtn = document.getElementById('snoozeBtn');
-        const resetAllBtn = document.getElementById('resetAll');
-        const markCompletedCheckbox = document.getElementById('markCompleted');
-        const closeBtn = document.getElementById('closeBtn');
-
-        // NOVOS elementos para o lembrete flutuante
-        const floatingReminder = document.getElementById('floatingReminder');
-        const floatingActivity = document.getElementById('floatingActivity');
-        const floatingTime = document.getElementById('floatingTime');
-        const nextActivities = document.getElementById('nextActivities');
-        const minimizeBtn = document.getElementById('minimizeBtn');
-        const closeFloatingBtn = document.getElementById('closeFloatingBtn');
-        const floatingTitleText = document.querySelector('.floating-title-text');
-
-        // Estado da aplicação
+        // Estado global
+        let activities = [];
         let currentActivity = null;
         let timers = [];
         let snoozeTimer = null;
         let autoReminderTimer = null;
+        let notebookNotificationTimer = null;
         let reminderCount = 0;
-        const AUTO_REMINDER_INTERVAL = 2 * 60 * 1000; // 2 minutos
         let isFloatingMinimized = false;
+        let isOverlayMode = false;
+        let completedActivities = new Set();
+        const AUTO_REMINDER_INTERVAL = 2 * 60 * 1000;
 
-        // Inicialização
-        function init() {
+        // Elementos DOM
+        const elements = {
+            activitiesContainer: document.getElementById('activitiesContainer'),
+            systemStatus: document.getElementById('systemStatus'),
+            syncStatus: document.getElementById('syncStatus'),
+            notification: document.getElementById('notification'),
+            notificationTime: document.getElementById('notificationTime'),
+            notificationMessage: document.getElementById('notificationMessage'),
+            notificationCounter: document.getElementById('notificationCounter'),
+            confirmBtn: document.getElementById('confirmBtn'),
+            snoozeBtn: document.getElementById('snoozeBtn'),
+            resetAllBtn: document.getElementById('resetAll'),
+            overlayToggle: document.getElementById('overlayToggle'),
+            markCompletedCheckbox: document.getElementById('markCompleted'),
+            closeBtn: document.getElementById('closeBtn'),
+            loadFromSheetBtn: document.getElementById('loadFromSheetBtn'),
+            progressBar: document.getElementById('progressBar'),
+            progressText: document.getElementById('progressText'),
+            
+            floatingReminder: document.getElementById('floatingReminder'),
+            floatingActivity: document.getElementById('floatingActivity'),
+            floatingTime: document.getElementById('floatingTime'),
+            nextActivities: document.getElementById('nextActivities'),
+            
+            notebookNotificationBar: document.getElementById('notebookNotificationBar'),
+            notebookNotificationText: document.getElementById('notebookNotificationText'),
+            notebookNotificationTime: document.getElementById('notebookNotificationTime'),
+            notebookSnoozeBtn: document.getElementById('notebookSnoozeBtn'),
+            notebookConfirmBtn: document.getElementById('notebookConfirmBtn'),
+            notebookCloseBtn: document.getElementById('notebookCloseBtn'),
+            notificationIndicator: document.getElementById('notificationIndicator')
+        };
+
+        // ========== FUNÇÕES DE CARREGAMENTO DA PLANILHA ==========
+
+        async function loadActivitiesFromSheet() {
+            showSyncStatus('📥 Carregando atividades da planilha...', 'loading');
+            
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getActivities`, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar dados');
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.activities) {
+                    // Processar os dados recebidos
+                    activities = data.activities.map(activity => {
+                        // Extrair apenas o horário da string de data
+                        const timeString = activity.time;
+                        let hour, minute;
+                        
+                        if (typeof timeString === 'string') {
+                            // Tentar extrair horário da string
+                            const timeMatch = timeString.match(/(\d{1,2}):(\d{2})/);
+                            if (timeMatch) {
+                                hour = parseInt(timeMatch[1]);
+                                minute = parseInt(timeMatch[2]);
+                            } else {
+                                // Se não encontrar formato HH:MM, usar horário padrão
+                                hour = 0;
+                                minute = 0;
+                            }
+                        } else if (timeString instanceof Date) {
+                            // Se já for um objeto Date
+                            hour = timeString.getHours();
+                            minute = timeString.getMinutes();
+                        }
+                        
+                        // Formatar horário como HH:MM
+                        const formattedTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                        
+                        return {
+                            name: activity.name,
+                            time: formattedTime,
+                            rowIndex: activity.rowIndex,
+                            completed: false,
+                            rawTime: timeString
+                        };
+                    });
+                    
+                    // Ordenar por horário
+                    activities.sort((a, b) => {
+                        const timeA = convertTimeToMinutes(a.time);
+                        const timeB = convertTimeToMinutes(b.time);
+                        return timeA - timeB;
+                    });
+                    
+                    showSyncStatus(`✅ ${activities.length} atividades carregadas com sucesso!`, 'success');
+                    elements.systemStatus.textContent = `✅ ${activities.length} atividades carregadas da planilha`;
+                    
+                    // Carregar estado das atividades
+                    loadCompletedActivities();
+                    renderActivities();
+                    setupTimers();
+                    updateProgress();
+                    updateFloatingReminder();
+                    
+                    return true;
+                } else {
+                    throw new Error('Formato de dados inválido');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar atividades:', error);
+                showSyncStatus('❌ Erro ao carregar atividades. Usando dados locais.', 'error');
+                
+                // Usar dados locais como fallback
+                loadLocalActivities();
+                return false;
+            }
+        }
+
+        // Carregar dados locais como fallback
+        function loadLocalActivities() {
+            activities = [
+                { name: "Enviar fechamento H x H | T2", time: "22:40", completed: false },
+                { name: "Preencher mantra plano", time: "23:15", completed: false },
+                { name: "Envio de report's", time: "23:16", completed: false },
+                { name: "Envio de H x H SP09", time: "23:20", completed: false },
+                { name: "Preencher Reunião Diária Mantra TL's", time: "23:30", completed: false },
+                { name: "Preencher Rotinas", time: "23:40", completed: false },
+                { name: "Verificar Matrix e Planilha de desligados(Manutenção dos dados)", time: "01:00", completed: false },
+                { name: "Verificar Reuniões de Piso", time: "01:30", completed: false },
+                { name: "Preencher Rotinas", time: "02:00", completed: false },
+                { name: "Preencher mantra Inbound", time: "04:30", completed: false },
+                { name: "Enviar fechamento OOT", time: "04:15", completed: false },
+                { name: "Verificar e-mails importantes", time: "05:00", completed: false },
+                { name: "Fazer feedback", time: "05:15", completed: false },
+                { name: "Preencher Rotinas", time: "05:40", completed: false },
+                { name: "Preencher mantra plano final", time: "05:59", completed: false },
+                { name: "Preencher mantra Real", time: "06:08", completed: false }
+            ];
+            
             loadCompletedActivities();
             renderActivities();
             setupTimers();
-            setupEventListeners();
+            updateProgress();
+            updateFloatingReminder();
+        }
+
+        // ========== FUNÇÕES DE SINCRONIZAÇÃO COM GOOGLE SHEETS ==========
+
+        async function syncWithGoogleSheets(activity, action = 'complete') {
+            showSyncStatus('🔄 Sincronizando com a planilha...', 'loading');
             
-            // Solicitar permissão para notificações do navegador
-            requestNotificationPermission();
+            try {
+                const params = new URLSearchParams({
+                    action: action,
+                    activity: encodeURIComponent(activity.name),
+                    time: activity.time,
+                    rowIndex: activity.rowIndex || 'auto',
+                    timestamp: new Date().toISOString()
+                });
+
+                const response = await fetch(`${SCRIPT_URL}?${params}`, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro na sincronização');
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showSyncStatus('✅ Sincronizado com sucesso!', 'success');
+                    console.log(`Atividade "${activity.name}" sincronizada com Google Sheets`);
+                    return true;
+                } else {
+                    throw new Error(data.message || 'Erro na sincronização');
+                }
+                
+            } catch (error) {
+                console.error('Erro na sincronização:', error);
+                showSyncStatus('⚠️ Sincronização offline - Dados salvos localmente', 'error');
+                saveLocalData(activity);
+                return false;
+            }
+        }
+
+        // ========== FUNÇÕES DE GESTÃO DE ATIVIDADES ==========
+
+        function loadCompletedActivities() {
+            const saved = localStorage.getItem('completedActivities');
+            if (saved) {
+                completedActivities = new Set(JSON.parse(saved));
+                activities.forEach(activity => {
+                    const key = `${activity.name}|${activity.time}`;
+                    activity.completed = completedActivities.has(key);
+                });
+            }
+            updateProgress();
+        }
+
+        function saveCompletedActivities() {
+            const completedArray = Array.from(completedActivities);
+            localStorage.setItem('completedActivities', JSON.stringify(completedArray));
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const completedCount = completedActivities.size;
+            const totalCount = activities.length;
+            const percentage = Math.round((completedCount / totalCount) * 100);
+            
+            elements.progressBar.style.width = `${percentage}%`;
+            elements.progressText.textContent = `${percentage}% concluído (${completedCount}/${totalCount} atividades)`;
+        }
+
+        function renderActivities() {
+            elements.activitiesContainer.innerHTML = '';
+            
+            if (activities.length === 0) {
+                elements.activitiesContainer.innerHTML = `
+                    <div class="activity-item">
+                        <div class="activity-info">
+                            <span class="status-indicator status-pending"></span>
+                            <span class="activity-name">Nenhuma atividade carregada</span>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            activities.forEach((activity, index) => {
+                const key = `${activity.name}|${activity.time}`;
+                const isCompleted = completedActivities.has(key);
+                
+                const activityElement = document.createElement('div');
+                activityElement.className = `activity-item fade-in ${isCompleted ? 'completed' : ''}`;
+                activityElement.innerHTML = `
+                    <div class="activity-info">
+                        <span class="status-indicator ${isCompleted ? 'status-completed' : 'status-pending'}"></span>
+                        <span class="activity-time">${activity.time}</span>
+                        <span class="activity-name">${activity.name}</span>
+                    </div>
+                    <div class="activity-checkbox-container">
+                        <span class="checkbox-label">Concluída:</span>
+                        <div class="activity-checkbox">
+                            <input type="checkbox" id="activity-${index}" 
+                                   ${isCompleted ? 'checked' : ''}
+                                   data-activity-key="${key}"
+                                   data-tooltip="${isCompleted ? 'Desmarcar' : 'Marcar como concluída'}">
+                        </div>
+                    </div>
+                `;
+                
+                elements.activitiesContainer.appendChild(activityElement);
+            });
+
+            // Adicionar event listeners para checkboxes
+            document.querySelectorAll('.activity-checkbox input').forEach(checkbox => {
+                checkbox.addEventListener('change', handleActivityCheckboxChange);
+            });
+        }
+
+        async function handleActivityCheckboxChange(event) {
+            const checkbox = event.target;
+            const activityKey = checkbox.getAttribute('data-activity-key');
+            
+            if (checkbox.checked) {
+                // Encontrar a atividade correspondente
+                const [activityName, activityTime] = activityKey.split('|');
+                const activity = activities.find(a => 
+                    a.name === activityName && a.time === activityTime
+                );
+                
+                if (activity) {
+                    completedActivities.add(activityKey);
+                    saveCompletedActivities();
+                    renderActivities();
+                    setupTimers();
+                    
+                    // Sincronizar com Google Sheets
+                    await syncWithGoogleSheets(activity);
+                    
+                    showSyncStatus('✅ Atividade concluída e sincronizada', 'success');
+                }
+            } else {
+                completedActivities.delete(activityKey);
+                saveCompletedActivities();
+                renderActivities();
+                setupTimers();
+            }
+        }
+
+        function convertTimeToMinutes(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        // ========== SISTEMA DE NOTIFICAÇÕES ==========
+
+        function setupTimers() {
+            // Limpar temporizadores existentes
+            timers.forEach(timer => clearTimeout(timer));
+            timers = [];
+            
+            const now = new Date();
+            
+            activities.forEach(activity => {
+                const key = `${activity.name}|${activity.time}`;
+                if (completedActivities.has(key)) return;
+                
+                const [hours, minutes] = activity.time.split(':').map(Number);
+                const activityTime = new Date();
+                activityTime.setHours(hours, minutes, 0, 0);
+                
+                // Se a hora já passou hoje, agendar para amanhã
+                if (activityTime < now) {
+                    activityTime.setDate(activityTime.getDate() + 1);
+                }
+                
+                const timeUntil = activityTime.getTime() - now.getTime();
+                
+                if (timeUntil > 0) {
+                    const timer = setTimeout(() => {
+                        showNotification(activity);
+                    }, timeUntil);
+                    
+                    timers.push(timer);
+                    console.log(`Agendado: ${activity.name} às ${activity.time} (em ${Math.round(timeUntil/60000)} min)`);
+                } else if (timeUntil > -60000) { // Se passou há menos de 1 minuto
+                    // Mostrar notificação imediatamente
+                    setTimeout(() => {
+                        showNotification(activity);
+                    }, 1000);
+                }
+            });
             
             updateSystemStatus();
             updateFloatingReminder();
         }
 
-        // Atualiza o status do sistema
-        function updateSystemStatus() {
-            const now = new Date();
-            const nextActivities = activities
-                .filter(activity => !activity.completed)
-                .map(activity => {
-                    const activityTime = new Date();
-                    const [hours, minutes] = activity.time.split(':');
-                    activityTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                    
-                    if (activityTime < now) {
-                        activityTime.setDate(activityTime.getDate() + 1);
-                    }
-                    
-                    return {
-                        name: activity.name,
-                        time: activity.time,
-                        timeUntil: activityTime.getTime() - now.getTime()
-                    };
-                })
-                .sort((a, b) => a.timeUntil - b.timeUntil);
+        function showNotification(activity) {
+            currentActivity = activity;
+            reminderCount = 0;
             
-            if (nextActivities.length > 0) {
-                const nextActivity = nextActivities[0];
-                const minutesUntil = Math.round(nextActivity.timeUntil / 60000);
-                systemStatus.textContent = `Próxima atividade: ${nextActivity.name} às ${nextActivity.time} (em ${minutesUntil} minutos)`;
+            updateNotificationContent();
+            elements.notification.classList.add('active');
+            elements.markCompletedCheckbox.checked = false;
+            playNotificationSound();
+            startAutoReminder();
+            
+            showNotebookNotification(activity);
+            
+            if (!document.hasFocus()) {
+                showBrowserNotification(activity);
+            }
+            
+            console.log(`🔔 Notificação: ${activity.name} às ${activity.time}`);
+        }
+
+        function updateNotificationContent() {
+            if (!currentActivity) return;
+            
+            elements.notificationTime.textContent = currentActivity.time;
+            
+            let message = currentActivity.name;
+            if (reminderCount > 0) {
+                message += ` (Lembrete ${reminderCount + 1})`;
+                elements.notificationCounter.textContent = reminderCount + 1;
+                elements.notificationCounter.style.display = 'inline-flex';
+                
+                if (reminderCount >= 2) {
+                    elements.notification.classList.add('urgent');
+                }
             } else {
-                systemStatus.textContent = 'Todas as atividades foram concluídas';
+                elements.notificationCounter.style.display = 'none';
+                elements.notification.classList.remove('urgent');
+            }
+            
+            elements.notificationMessage.textContent = message;
+        }
+
+        function startAutoReminder() {
+            if (autoReminderTimer) {
+                clearTimeout(autoReminderTimer);
+            }
+            
+            autoReminderTimer = setTimeout(() => {
+                if (currentActivity) {
+                    const key = `${currentActivity.name}|${currentActivity.time}`;
+                    if (!completedActivities.has(key)) {
+                        reminderCount++;
+                        updateNotificationContent();
+                        playNotificationSound();
+                        updateNotebookNotification();
+                        
+                        if (!document.hasFocus()) {
+                            showBrowserNotification(currentActivity);
+                        }
+                        
+                        startAutoReminder();
+                    }
+                }
+            }, AUTO_REMINDER_INTERVAL);
+        }
+
+        function stopAutoReminder() {
+            if (autoReminderTimer) {
+                clearTimeout(autoReminderTimer);
+                autoReminderTimer = null;
+            }
+            reminderCount = 0;
+            elements.notification.classList.remove('urgent');
+            elements.notificationCounter.style.display = 'none';
+        }
+
+        function hideNotification() {
+            elements.notification.classList.remove('active');
+            stopAutoReminder();
+            currentActivity = null;
+        }
+
+        function playNotificationSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = reminderCount > 0 ? 'sawtooth' : 'sine';
+                oscillator.frequency.value = reminderCount > 0 ? 600 : 800;
+                gainNode.gain.value = reminderCount > 0 ? 0.2 : 0.15;
+                
+                oscillator.start();
+                setTimeout(() => { oscillator.stop(); }, 300);
+            } catch (e) {
+                console.log("Áudio não suportado");
             }
         }
 
-        // NOVA FUNÇÃO: Atualiza o lembrete flutuante
+        // ========== NOTIFICAÇÕES DO NAVEGADOR ==========
+
+        function requestNotificationPermission() {
+            if ("Notification" in window && Notification.permission === "default") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        console.log("✅ Permissão para notificações concedida");
+                    }
+                });
+            }
+        }
+
+        function showBrowserNotification(activity) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                const title = reminderCount > 0 ? 
+                    `Lembrete (${reminderCount + 1}) - ${activity.time}` : 
+                    `⏰ ${activity.time}`;
+                
+                const body = reminderCount > 0 ? 
+                    `${activity.name} - Confirme a conclusão` : 
+                    activity.name;
+                
+                const notification = new Notification(title, {
+                    body: body,
+                    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏰</text></svg>",
+                    tag: "activity-reminder",
+                    requireInteraction: true
+                });
+                
+                notification.onclick = () => {
+                    window.focus();
+                    notification.close();
+                };
+            }
+        }
+
+        // ========== BARRA DE NOTIFICAÇÃO INFERIOR ==========
+
+        function showNotebookNotification(activity) {
+            elements.notebookNotificationText.textContent = activity.name;
+            elements.notebookNotificationTime.textContent = activity.time;
+            elements.notebookNotificationBar.classList.add('active');
+            elements.notificationIndicator.style.display = 'block';
+            
+            if (notebookNotificationTimer) {
+                clearTimeout(notebookNotificationTimer);
+            }
+            
+            notebookNotificationTimer = setTimeout(() => {
+                if (elements.notebookNotificationBar.classList.contains('active')) {
+                    hideNotebookNotification();
+                }
+            }, 30000);
+        }
+
+        function updateNotebookNotification() {
+            if (currentActivity) {
+                let message = currentActivity.name;
+                if (reminderCount > 0) {
+                    message += ` (Lembrete ${reminderCount + 1})`;
+                }
+                
+                elements.notebookNotificationText.textContent = message;
+                elements.notebookNotificationTime.textContent = currentActivity.time;
+                
+                if (notebookNotificationTimer) {
+                    clearTimeout(notebookNotificationTimer);
+                }
+                
+                notebookNotificationTimer = setTimeout(() => {
+                    if (elements.notebookNotificationBar.classList.contains('active')) {
+                        hideNotebookNotification();
+                    }
+                }, 30000);
+            }
+        }
+
+        function hideNotebookNotification() {
+            elements.notebookNotificationBar.classList.remove('active');
+            elements.notificationIndicator.style.display = 'none';
+            
+            if (notebookNotificationTimer) {
+                clearTimeout(notebookNotificationTimer);
+                notebookNotificationTimer = null;
+            }
+        }
+
+        // ========== LEMBRETE FLUTUANTE ==========
+
         function updateFloatingReminder() {
             const now = new Date();
             const pendingActivities = activities
-                .filter(activity => !activity.completed)
+                .filter(activity => {
+                    const key = `${activity.name}|${activity.time}`;
+                    return !completedActivities.has(key);
+                })
                 .map(activity => {
+                    const [hours, minutes] = activity.time.split(':').map(Number);
                     const activityTime = new Date();
-                    const [hours, minutes] = activity.time.split(':');
-                    activityTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                    activityTime.setHours(hours, minutes, 0, 0);
                     
                     if (activityTime < now) {
                         activityTime.setDate(activityTime.getDate() + 1);
                     }
                     
                     return {
-                        name: activity.name,
-                        time: activity.time,
+                        ...activity,
                         timeUntil: activityTime.getTime() - now.getTime(),
                         date: activityTime
                     };
@@ -632,391 +1631,343 @@
                 const nextActivity = pendingActivities[0];
                 const minutesUntil = Math.round(nextActivity.timeUntil / 60000);
                 
-                floatingActivity.textContent = nextActivity.name;
-                floatingTime.textContent = `${nextActivity.time} (em ${minutesUntil} min)`;
+                elements.floatingActivity.textContent = nextActivity.name;
+                elements.floatingTime.textContent = `${nextActivity.time} (em ${minutesUntil} min)`;
                 
-                // Atualizar próximas atividades
                 if (pendingActivities.length > 1) {
-                    let nextActivitiesHTML = '<div style="margin-top: 8px; font-weight: bold;">Próximas:</div>';
+                    let nextActivitiesHTML = '<div style="margin-top: 10px; font-weight: bold;">📅 Próximas:</div>';
                     for (let i = 1; i < Math.min(pendingActivities.length, 4); i++) {
                         const activity = pendingActivities[i];
                         const mins = Math.round(activity.timeUntil / 60000);
                         nextActivitiesHTML += `
                             <div class="next-activity-item">
                                 <span>${activity.name}</span>
-                                <span>${activity.time} (${mins} min)</span>
+                                <span class="next-activity-time">${activity.time} (${mins} min)</span>
                             </div>
                         `;
                     }
-                    nextActivities.innerHTML = nextActivitiesHTML;
+                    elements.nextActivities.innerHTML = nextActivitiesHTML;
                 } else {
-                    nextActivities.innerHTML = '';
+                    elements.nextActivities.innerHTML = '';
                 }
             } else {
-                floatingActivity.textContent = 'Todas as atividades concluídas';
-                floatingTime.textContent = '--:--';
-                nextActivities.innerHTML = '';
+                elements.floatingActivity.textContent = '🎉 Todas as atividades concluídas!';
+                elements.floatingTime.textContent = '--:--';
+                elements.nextActivities.innerHTML = '';
             }
         }
 
-        // Carrega atividades completas do localStorage
-        function loadCompletedActivities() {
-            const completed = localStorage.getItem('completedActivities');
-            if (completed) {
-                const completedArray = JSON.parse(completed);
-                activities.forEach(activity => {
-                    activity.completed = completedArray.includes(activity.name + "|" + activity.time);
-                });
-            } else {
-                activities.forEach(activity => {
-                    activity.completed = false;
-                });
-            }
-        }
-
-        // Salva atividades completas no localStorage
-        function saveCompletedActivities() {
-            const completedArray = activities
-                .filter(activity => activity.completed)
-                .map(activity => activity.name + "|" + activity.time);
-            localStorage.setItem('completedActivities', JSON.stringify(completedArray));
-        }
-
-        // Renderiza a lista de atividades
-        function renderActivities() {
-            activitiesContainer.innerHTML = '';
-            
-            if (activities.length === 0) {
-                activitiesContainer.innerHTML = '<div class="activity-item">Nenhuma atividade encontrada</div>';
-                return;
-            }
-            
-            activities.forEach(activity => {
-                const activityElement = document.createElement('div');
-                activityElement.className = `activity-item ${activity.completed ? 'completed' : ''}`;
-                
-                activityElement.innerHTML = `
-                    <div>
-                        <span class="status-indicator ${activity.completed ? 'status-completed' : 'status-pending'}"></span>
-                        ${activity.name}
-                    </div>
-                    <div class="activity-time">${activity.time}</div>
-                `;
-                
-                activitiesContainer.appendChild(activityElement);
-            });
-        }
-
-        // Configura os temporizadores para as atividades
-        function setupTimers() {
-            // Limpa timers anteriores
-            timers.forEach(timer => clearTimeout(timer));
-            timers = [];
-            
-            activities.forEach(activity => {
-                // Se a atividade já foi completada, não criar timer
-                if (activity.completed) return;
-                
-                const now = new Date();
-                const activityTime = new Date();
-                
-                // Define o horário da atividade
-                const [hours, minutes] = activity.time.split(':');
-                activityTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                
-                // Se o horário já passou hoje, agenda para amanhã
-                if (activityTime < now) {
-                    activityTime.setDate(activityTime.getDate() + 1);
-                }
-                
-                const timeUntilActivity = activityTime.getTime() - now.getTime();
-                
-                // Agenda a notificação apenas se o tempo for positivo
-                if (timeUntilActivity > 0) {
-                    const timer = setTimeout(() => {
-                        showNotification(activity);
-                    }, timeUntilActivity);
-                    
-                    timers.push(timer);
-                    console.log(`Notificação agendada para: ${activity.name} às ${activity.time} (em ${Math.round(timeUntilActivity/1000/60)} minutos)`);
-                }
-            });
-            
-            updateSystemStatus();
-            updateFloatingReminder();
-        }
-
-        // Mostra a notificação para uma atividade
-        function showNotification(activity) {
-            currentActivity = activity;
-            reminderCount = 0;
-            
-            // Atualiza o conteúdo da notificação
-            updateNotificationContent();
-            
-            // Mostra a notificação
-            notification.classList.add('active');
-            
-            // Reseta o checkbox
-            markCompletedCheckbox.checked = false;
-            
-            // Tocar um som de notificação
-            playNotificationSound();
-            
-            // Inicia o lembrete automático
-            startAutoReminder();
-            
-            // Se a página não está em foco, mostrar notificação do navegador
-            if (!document.hasFocus()) {
-                showBrowserNotification(activity, false);
-            }
-            
-            console.log(`Notificação exibida: ${activity.name} às ${activity.time}`);
-        }
-
-        // Atualiza o conteúdo da notificação
-        function updateNotificationContent() {
-            if (!currentActivity) return;
-            
-            notificationTime.textContent = currentActivity.time;
-            
-            // Adiciona contador de lembretes se for um lembrete repetido
-            let message = currentActivity.name;
-            if (reminderCount > 0) {
-                message += ` (Lembrete ${reminderCount + 1})`;
-                notificationCounter.textContent = reminderCount + 1;
-                notificationCounter.style.display = 'inline-flex';
-                
-                // Torna a notificação mais urgente após alguns lembretes
-                if (reminderCount >= 2) {
-                    notification.classList.add('urgent');
-                }
-            } else {
-                notificationCounter.style.display = 'none';
-                notification.classList.remove('urgent');
-            }
-            
-            notificationMessage.textContent = message;
-        }
-
-        // Inicia o sistema de lembretes automáticos
-        function startAutoReminder() {
-            // Limpa timer anterior
-            if (autoReminderTimer) {
-                clearTimeout(autoReminderTimer);
-            }
-            
-            // Agenda próximo lembrete
-            autoReminderTimer = setTimeout(() => {
-                if (currentActivity && !currentActivity.completed) {
-                    reminderCount++;
-                    updateNotificationContent();
-                    
-                    // Tocar som novamente
-                    playNotificationSound();
-                    
-                    // Mostrar notificação do navegador se a página não estiver em foco
-                    if (!document.hasFocus()) {
-                        showBrowserNotification(currentActivity, true);
-                    }
-                    
-                    // Continua o ciclo de lembretes
-                    startAutoReminder();
-                    
-                    console.log(`Lembrete automático #${reminderCount} para: ${currentActivity.name}`);
-                }
-            }, AUTO_REMINDER_INTERVAL);
-        }
-
-        // Para o sistema de lembretes automáticos
-        function stopAutoReminder() {
-            if (autoReminderTimer) {
-                clearTimeout(autoReminderTimer);
-                autoReminderTimer = null;
-            }
-            reminderCount = 0;
-            notification.classList.remove('urgent');
-            notificationCounter.style.display = 'none';
-        }
-
-        // Toca um som de notificação
-        function playNotificationSound() {
-            try {
-                // Criar um contexto de áudio
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                // Som mais urgente para lembretes repetidos
-                if (reminderCount > 0) {
-                    oscillator.type = 'sawtooth';
-                    oscillator.frequency.value = 600;
-                    gainNode.gain.value = 0.15;
-                } else {
-                    oscillator.type = 'sine';
-                    oscillator.frequency.value = 800;
-                    gainNode.gain.value = 0.1;
-                }
-                
-                oscillator.start();
-                
-                // Parar após 300ms
-                setTimeout(() => {
-                    oscillator.stop();
-                }, 300);
-            } catch (e) {
-                console.log("Áudio não suportado neste navegador");
-            }
-        }
-
-        // Solicita permissão para notificações do navegador
-        function requestNotificationPermission() {
-            if ("Notification" in window && Notification.permission === "default") {
-                Notification.requestPermission();
-            }
-        }
-
-        // Mostra notificação do navegador
-        function showBrowserNotification(activity, isReminder) {
-            if ("Notification" in window && Notification.permission === "granted") {
-                const title = isReminder ? "Lembrete Repetido" : "Lembrete de Atividade";
-                const body = isReminder ? 
-                    `${activity.name} - ${activity.time} (Lembrete ${reminderCount + 1})` : 
-                    `${activity.name} - ${activity.time}`;
-                
-                new Notification(title, {
-                    body: body,
-                    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏰</text></svg>",
-                    tag: "activity-reminder"
-                });
-            }
-        }
-
-        // Configura os event listeners
-        function setupEventListeners() {
-            // Confirmar atividade
-            confirmBtn.addEventListener('click', () => {
-                if (currentActivity) {
-                    // Marca como concluído se o checkbox estiver marcado
-                    if (markCompletedCheckbox.checked) {
-                        currentActivity.completed = true;
-                        saveCompletedActivities();
-                        renderActivities();
-                        setupTimers(); // Reconfigura os timers
-                        console.log(`Atividade marcada como concluída: ${currentActivity.name}`);
-                    }
-                }
-                hideNotification();
-            });
-            
-            // Adiar notificação
-            snoozeBtn.addEventListener('click', () => {
-                hideNotification();
-                
-                // Agenda a notificação novamente em 5 minutos
-                snoozeTimer = setTimeout(() => {
-                    if (currentActivity && !currentActivity.completed) {
-                        showNotification(currentActivity);
-                    }
-                }, 5 * 60 * 1000); // 5 minutos
-                
-                console.log(`Notificação adiada por 5 minutos: ${currentActivity.name}`);
-            });
-            
-            // Reiniciar todas as atividades
-            resetAllBtn.addEventListener('click', () => {
-                if (confirm('Tem certeza que deseja reiniciar todas as atividades?')) {
-                    activities.forEach(activity => {
-                        activity.completed = false;
-                    });
-                    saveCompletedActivities();
-                    renderActivities();
-                    setupTimers();
-                    hideNotification();
-                    console.log("Todas as atividades foram reiniciadas");
-                }
-            });
-            
-            // Fechar notificação
-            closeBtn.addEventListener('click', () => {
-                hideNotification();
-            });
-
-            // NOVOS event listeners para o lembrete flutuante
-            minimizeBtn.addEventListener('click', () => {
-                toggleFloatingReminder();
-            });
-
-            closeFloatingBtn.addEventListener('click', () => {
-                floatingReminder.style.display = 'none';
-            });
-
-            floatingReminder.addEventListener('click', (e) => {
-                if (isFloatingMinimized) {
-                    toggleFloatingReminder();
-                }
-            });
-
-            // Atualizar o lembrete flutuante a cada minuto
-            setInterval(updateFloatingReminder, 60000);
-        }
-
-        // NOVA FUNÇÃO: Alternar entre minimizado e expandido
         function toggleFloatingReminder() {
             isFloatingMinimized = !isFloatingMinimized;
             
             if (isFloatingMinimized) {
-                floatingReminder.classList.add('minimized');
-                floatingTitleText.style.display = 'none';
-                floatingReminder.innerHTML = `
-                    <div class="floating-minimized-icon">⏰</div>
-                `;
+                elements.floatingReminder.classList.add('minimized');
+                elements.floatingReminder.innerHTML = `<div class="floating-minimized-icon">⏰</div>`;
+                elements.floatingReminder.title = "Clique para expandir";
             } else {
-                floatingReminder.classList.remove('minimized');
-                floatingReminder.innerHTML = `
+                elements.floatingReminder.classList.remove('minimized');
+                elements.floatingReminder.innerHTML = `
                     <div class="floating-header">
                         <div class="floating-title">
                             <span>⏰</span>
-                            <span class="floating-title-text">Lembretes</span>
+                            <span class="floating-title-text">Lembretes Ativos</span>
                         </div>
                         <div class="floating-controls">
-                            <button class="floating-btn" id="minimizeBtn">−</button>
-                            <button class="floating-btn" id="closeFloatingBtn">×</button>
+                            <button class="floating-btn" id="minimizeBtn" data-tooltip="Minimizar">−</button>
+                            <button class="floating-btn" id="closeFloatingBtn" data-tooltip="Fechar">×</button>
                         </div>
                     </div>
                     <div class="floating-content">
                         <div class="floating-activity" id="floatingActivity">
-                            ${floatingActivity.textContent}
+                            ${elements.floatingActivity.textContent}
                         </div>
                         <div class="floating-time" id="floatingTime">
-                            ${floatingTime.textContent}
+                            ${elements.floatingTime.textContent}
                         </div>
                         <div class="next-activities" id="nextActivities">
-                            ${nextActivities.innerHTML}
+                            ${elements.nextActivities.innerHTML}
                         </div>
                     </div>
                 `;
                 
-                // Reatribuir event listeners
                 document.getElementById('minimizeBtn').addEventListener('click', toggleFloatingReminder);
                 document.getElementById('closeFloatingBtn').addEventListener('click', () => {
-                    floatingReminder.style.display = 'none';
+                    elements.floatingReminder.style.display = 'none';
                 });
             }
         }
 
-        // Esconde a notificação
-        function hideNotification() {
-            notification.classList.remove('active');
-            stopAutoReminder();
-            currentActivity = null;
+        // ========== FUNÇÕES UTILITÁRIAS ==========
+
+        function updateSystemStatus() {
+            const now = new Date();
+            const pendingActivities = activities.filter(activity => {
+                const key = `${activity.name}|${activity.time}`;
+                return !completedActivities.has(key);
+            });
+            
+            if (pendingActivities.length > 0) {
+                const nextActivity = pendingActivities
+                    .map(activity => {
+                        const [hours, minutes] = activity.time.split(':').map(Number);
+                        const activityTime = new Date();
+                        activityTime.setHours(hours, minutes, 0, 0);
+                        
+                        if (activityTime < now) {
+                            activityTime.setDate(activityTime.getDate() + 1);
+                        }
+                        
+                        return {
+                            name: activity.name,
+                            time: activity.time,
+                            timeUntil: activityTime.getTime() - now.getTime()
+                        };
+                    })
+                    .sort((a, b) => a.timeUntil - b.timeUntil)[0];
+                
+                const minutesUntil = Math.round(nextActivity.timeUntil / 60000);
+                elements.systemStatus.innerHTML = `⏳ <strong>Próxima atividade:</strong> ${nextActivity.name} às ${nextActivity.time} <br><small>(em aproximadamente ${minutesUntil} minutos)</small>`;
+            } else {
+                elements.systemStatus.innerHTML = '✅ <strong>Todas as atividades foram concluídas!</strong>';
+            }
         }
 
-        // Inicializa a aplicação quando a página carrega
-        document.addEventListener('DOMContentLoaded', init);
+        function toggleOverlayMode() {
+            isOverlayMode = !isOverlayMode;
+            document.body.classList.toggle('overlay-mode', isOverlayMode);
+            elements.overlayToggle.innerHTML = isOverlayMode ? 
+                '<span>🖥️</span> Modo Normal' : 
+                '<span>🖥️</span> Modo Sobreposição';
+            
+            if (isOverlayMode) {
+                document.querySelectorAll('.notification, .floating-reminder').forEach(el => {
+                    el.style.zIndex = '2147483646';
+                });
+            }
+        }
+
+        function setupDragFunctionality() {
+            const draggable = document.querySelector('.draggable');
+            const container = draggable.parentElement;
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+
+            draggable.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+
+            function startDrag(e) {
+                if (e.target.classList.contains('drag-handle') || e.target.classList.contains('draggable')) {
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    
+                    const style = window.getComputedStyle(container);
+                    const matrix = new DOMMatrixReadOnly(style.transform);
+                    initialX = matrix.m41;
+                    initialY = matrix.m42;
+                    
+                    e.preventDefault();
+                }
+            }
+
+            function drag(e) {
+                if (!isDragging) return;
+                
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                
+                container.style.transform = `translate(${initialX + dx}px, ${initialY + dy}px)`;
+            }
+
+            function stopDrag() {
+                isDragging = false;
+            }
+        }
+
+        function showSyncStatus(message, type) {
+            elements.syncStatus.textContent = message;
+            elements.syncStatus.className = 'sync-status';
+            elements.syncStatus.classList.add(`sync-${type}`);
+            elements.syncStatus.style.display = 'block';
+            
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    elements.syncStatus.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function saveLocalData(activity) {
+            const localData = JSON.parse(localStorage.getItem('pendingSync') || '[]');
+            localData.push({
+                activity: activity.name,
+                time: activity.time,
+                rowIndex: activity.rowIndex,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('pendingSync', JSON.stringify(localData));
+        }
+
+        async function syncPendingData() {
+            const pendingData = JSON.parse(localStorage.getItem('pendingSync') || '[]');
+            if (pendingData.length > 0) {
+                showSyncStatus(`📡 Sincronizando ${pendingData.length} itens pendentes...`, 'loading');
+                
+                for (const item of pendingData) {
+                    await syncWithGoogleSheets(item, 'complete');
+                }
+                
+                localStorage.removeItem('pendingSync');
+                showSyncStatus('✅ Todos os dados sincronizados!', 'success');
+            }
+        }
+
+        // ========== EVENT LISTENERS ==========
+
+        function setupEventListeners() {
+            elements.confirmBtn.addEventListener('click', async () => {
+                if (currentActivity) {
+                    const key = `${currentActivity.name}|${currentActivity.time}`;
+                    
+                    if (elements.markCompletedCheckbox.checked) {
+                        completedActivities.add(key);
+                        saveCompletedActivities();
+                        renderActivities();
+                        setupTimers();
+                        
+                        await syncWithGoogleSheets(currentActivity);
+                        
+                        showSyncStatus('✅ Atividade concluída e sincronizada', 'success');
+                    }
+                }
+                hideNotification();
+                hideNotebookNotification();
+            });
+            
+            elements.notebookConfirmBtn.addEventListener('click', async () => {
+                if (currentActivity) {
+                    const key = `${currentActivity.name}|${currentActivity.time}`;
+                    completedActivities.add(key);
+                    saveCompletedActivities();
+                    renderActivities();
+                    setupTimers();
+                    
+                    await syncWithGoogleSheets(currentActivity);
+                    
+                    showSyncStatus('✅ Atividade concluída via barra', 'success');
+                }
+                hideNotification();
+                hideNotebookNotification();
+            });
+
+            elements.snoozeBtn.addEventListener('click', () => {
+                hideNotification();
+                hideNotebookNotification();
+                if (snoozeTimer) clearTimeout(snoozeTimer);
+                
+                snoozeTimer = setTimeout(() => {
+                    if (currentActivity) {
+                        const key = `${currentActivity.name}|${currentActivity.time}`;
+                        if (!completedActivities.has(key)) {
+                            showNotification(currentActivity);
+                        }
+                    }
+                }, 5 * 60 * 1000);
+                
+                showSyncStatus('⏸️ Notificação adiada por 5 minutos', 'success');
+            });
+            
+            elements.notebookSnoozeBtn.addEventListener('click', () => {
+                hideNotification();
+                hideNotebookNotification();
+                if (snoozeTimer) clearTimeout(snoozeTimer);
+                
+                snoozeTimer = setTimeout(() => {
+                    if (currentActivity) {
+                        const key = `${currentActivity.name}|${currentActivity.time}`;
+                        if (!completedActivities.has(key)) {
+                            showNotification(currentActivity);
+                        }
+                    }
+                }, 5 * 60 * 1000);
+                
+                showSyncStatus('⏸️ Adiado via barra por 5 minutos', 'success');
+            });
+
+            elements.resetAllBtn.addEventListener('click', () => {
+                if (confirm('Tem certeza que deseja reiniciar TODAS as atividades?')) {
+                    completedActivities.clear();
+                    saveCompletedActivities();
+                    renderActivities();
+                    setupTimers();
+                    hideNotification();
+                    hideNotebookNotification();
+                    showSyncStatus('🔄 Todas as atividades reiniciadas', 'success');
+                }
+            });
+
+            elements.overlayToggle.addEventListener('click', toggleOverlayMode);
+            elements.closeBtn.addEventListener('click', hideNotification);
+            elements.notebookCloseBtn.addEventListener('click', hideNotebookNotification);
+
+            elements.loadFromSheetBtn.addEventListener('click', async () => {
+                await loadActivitiesFromSheet();
+            });
+
+            document.getElementById('minimizeBtn').addEventListener('click', toggleFloatingReminder);
+            document.getElementById('closeFloatingBtn').addEventListener('click', () => {
+                elements.floatingReminder.style.display = 'none';
+            });
+
+            setInterval(updateFloatingReminder, 60000);
+            setInterval(updateSystemStatus, 30000);
+            setInterval(syncPendingData, 300000);
+            
+            window.addEventListener('focus', checkMissedNotifications);
+        }
+
+        function checkMissedNotifications() {
+            const now = new Date();
+            activities.forEach(activity => {
+                const key = `${activity.name}|${activity.time}`;
+                if (!completedActivities.has(key)) {
+                    const [hours, minutes] = activity.time.split(':').map(Number);
+                    const activityTime = new Date();
+                    activityTime.setHours(hours, minutes, 0, 0);
+                    
+                    const timeDiff = now.getTime() - activityTime.getTime();
+                    if (timeDiff > 0 && timeDiff < 3600000) {
+                        if (!currentActivity || currentActivity.name !== activity.name) {
+                            showNotification(activity);
+                        }
+                    }
+                }
+            });
+        }
+
+        // ========== INICIALIZAÇÃO ==========
+
+        async function init() {
+            console.log('🚀 Inicializando Sistema de Lembretes Inteligente...');
+            
+            setupDragFunctionality();
+            setupEventListeners();
+            requestNotificationPermission();
+            
+            await loadActivitiesFromSheet();
+            
+            console.log('✅ Sistema iniciado com sucesso!');
+            console.log(`📊 ${completedActivities.size}/${activities.length} atividades concluídas`);
+            
+            showSyncStatus('✅ Sistema carregado e pronto', 'success');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     </script>
 </body>
 </html>
